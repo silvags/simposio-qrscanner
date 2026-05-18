@@ -56,14 +56,21 @@ function onScanSuccess(decodedText) {
       token: decodedText
     })
   })
-    .then(res => {
-      if (!res.ok) {
-        throw new Error("HTTP " + res.status);
+    .then(async res => {
+      let data;
+      try {
+        data = await res.json();
+      } catch (_) {
+        throw new Error("Resposta inválida do servidor (HTTP " + res.status + ")");
       }
-      return res.json();
+
+      if (!res.ok) {
+        throw new Error(data.mensagem || "Erro HTTP " + res.status);
+      }
+      return data;
     })
     .then(data => {
-      const mensagem = (data && data.mensagem) ? data.mensagem : "Resposta inválida do servidor";
+      const mensagem = (data && data.mensagem) ? data.mensagem : "Sucesso";
       if (data && data.sucesso) {
         mostrarFeedback(mensagem, "ok");
       } else {
@@ -77,12 +84,9 @@ function onScanSuccess(decodedText) {
       if (err.name === "AbortError") {
         mostrarFeedback("Tempo de resposta excedido", "erro");
       } else {
-        mostrarFeedback("Erro de conexão", "erro");
+        mostrarFeedback(err.message || "Erro de conexão", "erro");
       }
       bloqueado = false;
-    })
-    .finally(() => {
-      clearTimeout(timeoutId);
     });
 }
 
