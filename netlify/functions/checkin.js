@@ -38,6 +38,7 @@ exports.handler = async function handler(event) {
   try {
     const payload = JSON.parse(event.body || "{}");
     const token = payload.token;
+    const periodo = payload.periodo;
 
     if (!token) {
       return {
@@ -56,6 +57,7 @@ exports.handler = async function handler(event) {
       body: JSON.stringify({
         action: "checkin",
         token,
+        periodo,
         apiKey
       })
     });

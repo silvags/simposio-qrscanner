@@ -44,6 +44,8 @@ function onScanSuccess(decodedText) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
 
+  const periodo = document.getElementById("periodoSelect").value;
+
   fetch(API_URL, {
     method: "POST",
     headers: {
@@ -53,7 +55,8 @@ function onScanSuccess(decodedText) {
     signal: controller.signal,
     body: JSON.stringify({
       action: "checkin",
-      token: decodedText
+      token: decodedText,
+      periodo: periodo
     })
   })
     .then(async res => {
